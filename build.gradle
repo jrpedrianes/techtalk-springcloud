@@ -1,0 +1,64 @@
+buildscript {
+    ext {
+        springBootVersion = "1.3.5.RELEASE"
+        propdepsPluginVersion = "0.0.7"
+        gradleGitProperties = "1.4.16"
+    }
+    repositories {
+        mavenCentral()
+        maven { url "http://repo.spring.io/plugins-release" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.springframework.build.gradle:propdeps-plugin:${propdepsPluginVersion}"
+        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:${gradleGitProperties}"
+    }
+}
+
+allprojects {
+    apply plugin: "base"
+
+    group "com.jrpedrianes.techtalk.techtalk-springcloud"
+    version "1.0.0-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+    }
+}
+description = "Spring Boot Cloud"
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "propdeps"
+    apply plugin: "spring-boot"
+    apply plugin: "com.gorylenko.gradle-git-properties"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    ext {
+        springCloudStreamVersion = "1.0.0.RELEASE"
+        springBootAdminServer = "1.3.3"
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom 'org.springframework.cloud:spring-cloud-starter-parent:Brixton.RELEASE'
+        }
+
+        dependencies {
+            dependency "org.springframework.cloud:spring-cloud-starter-stream-redis:$springCloudStreamVersion"
+            dependency "de.codecentric:spring-boot-admin-server:$springBootAdminServer"
+            dependency "de.codecentric:spring-boot-admin-server-ui:$springBootAdminServer"
+        }
+    }
+
+    compileJava.dependsOn(processResources)
+
+    processResources {
+        filesMatching("**/*.yml") {
+            expand(project.properties)
+        }
+    }
+}

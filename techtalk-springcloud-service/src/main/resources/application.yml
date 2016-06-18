@@ -1,0 +1,34 @@
+info:
+  app.name: "${jar.baseName}"
+  app.description: "${description}"
+  app.version: "${version}"
+
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  jackson:
+    serialization-inclusion: NON_NULL
+    serialization:
+      WRITE_EMPTY_JSON_ARRAYS: false
+      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+
+management:
+  context-path: /manage
+
+server:
+  port: 8000
+
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: postgres
+#tech-talk:
+#  graphite:
+#    host: localhost
+#    port: 2003
+#  message: Hola

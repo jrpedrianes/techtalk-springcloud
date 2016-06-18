@@ -1,0 +1,10 @@
+include "techtalk-springcloud-service",
+        "techtalk-springcloud-service-client",
+        "techtalk-springcloud-config",
+        "techtalk-springcloud-discovery-eureka"
+
+rootProject.name = "techtalk-springcloud"
+
+rootProject.children.each { project ->
+    project.buildFileName = "${project.name}.gradle"
+}

@@ -1,0 +1,26 @@
+### Global
+.*
+!.gitignore
+!.gitkeep
+!.mvn
+
+### JetBrains
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio
+
+*.iml
+/out/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+### Eclipse
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+
+### Gradle
+build/

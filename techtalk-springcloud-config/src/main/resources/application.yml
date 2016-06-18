@@ -1,0 +1,31 @@
+info:
+  app.name: "${jar.baseName}"
+  app.description: "${description}"
+  app.version: "${version}"
+
+spring:
+  application:
+    name: techtalk-springcloud-config
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///srv/projects/JRPEDRIANES/2016-tech-talk/techtalk-springcloud/etc/config
+
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://localhost:8002/eureka/
+  instance:
+    status-page-url-path: /manage/info
+    health-check-url-path: /manage/health
+    metadata-map:
+      management.context-path: /manage
+
+management:
+  context-path: /manage
+
+server:
+  port: 8001
