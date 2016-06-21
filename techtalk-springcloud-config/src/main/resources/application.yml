@@ -10,7 +10,7 @@ spring:
     config:
       server:
         git:
-          uri: file:///srv/projects/JRPEDRIANES/2016-tech-talk/techtalk-springcloud/etc/config
+          uri: file:///srv/projects/JRPEDRIANES/2016-tech-talk/techtalk-springcloud-config
 
 eureka:
   client:

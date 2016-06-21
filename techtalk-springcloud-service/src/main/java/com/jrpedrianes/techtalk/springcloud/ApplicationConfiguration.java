@@ -1,13 +1,18 @@
 package com.jrpedrianes.techtalk.springcloud;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.graphite.Graphite;
+import com.codahale.metrics.graphite.GraphiteReporter;
 import com.jrpedrianes.techtalk.springcloud.core.domain.ReservationDomain;
 import com.jrpedrianes.techtalk.springcloud.core.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,15 +38,15 @@ public class ApplicationConfiguration {
         return () -> Health.status("I <3 Spring Boot Cloud!").build();
     }
 
-//    @ConditionalOnProperty(prefix = "tech-talk.graphite", name = "host", matchIfMissing = true)
-//    @Bean
-//    public GraphiteReporter graphiteReporter(MetricRegistry registry) {
-//        Graphite graphite = new Graphite(applicationProperties.getGraphite().getHost(), applicationProperties.getGraphite().getPort());
-//
-//        GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
-//                .prefixedWith("techtalks")
-//                .build(graphite);
-//        reporter.start(2, TimeUnit.SECONDS);
-//        return reporter;
-//    }
+    @ConditionalOnProperty(prefix = "tech-talk.graphite", name = "host", matchIfMissing = true)
+    @Bean
+    public GraphiteReporter graphiteReporter(MetricRegistry registry) {
+        Graphite graphite = new Graphite(applicationProperties.getGraphite().getHost(), applicationProperties.getGraphite().getPort());
+
+        GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
+                .prefixedWith("techtalks")
+                .build(graphite);
+        reporter.start(2, TimeUnit.SECONDS);
+        return reporter;
+    }
 }

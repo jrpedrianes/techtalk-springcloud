@@ -13,9 +13,12 @@ public class DemoApplication {
 
     @Bean
     public CommandLineRunner runner(DiscoveryClient dc) {
-        return args ->
-                dc.getInstances("techtalk-springcloud-service")
-                        .forEach(si -> System.out.println(String.format("%s %s:%s", si.getServiceId(), si.getHost(), si.getPort())));
+        return args -> {
+            System.out.println("\n ****************** \n");
+            dc.getInstances("techtalk-springcloud-service")
+                    .forEach(si -> System.out.println(String.format("%s %s:%s", si.getServiceId(), si.getHost(), si.getPort())));
+            System.out.println("\n ****************** \n");
+        };
     }
 
     public static void main(String[] args) {

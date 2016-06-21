@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-        <title>reveal.js</title>
+        <title>TechTalk - Spring Cloud</title>
 
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/reveal.css">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/reveal.js/3.3.0/css/theme/beige.css">
@@ -19,42 +19,388 @@
                 <section data-markdown data-separator="^\n---\n$" data-separator-vertical="^\n--\n$">
                     <script type="text/template">
 
-## Con Spring a la Nube
+# Con Spring a la Nube
+
+![spring cloud](https://avatars3.githubusercontent.com/u/8216893 "Spring Cloud") <!-- .element: class="plain" -->
 
 [@jrpedrianes](http://twitter.com/jrpedrianes)
 
 ---
 
-## Slide 1.1
-```javascript
-function linkify( selector ) {
-    if( supports3DTransforms ) {
-        var nodes = document.querySelectorAll( selector );
-        for( var i = 0, len = nodes.length; i &lt; len; i++ ) {
-            var node = nodes[i];
-            if( !node.className ) {
-                node.className += ' roll';
-            }
-        }
+## Microservices - Lo bueno
+
+- Escalar (cada servicio puede escalar independientemente)
+- Mantener (Los códigos mequeños son más fáciles de entender)
+- Despliegue (Evitar "downtime" es más fácil)
+- Experimentar con otras tecnologías (Cada service puede estar escrite en un stack tecnológico diferente)
+
+---
+
+## Microservices - Lo malo
+
+![Monolithic-vs-Microservices](https://www.future-processing.pl/wp-content/uploads/2015/12/Monolithic-vs-Microservices-Future-Processing.jpg) <!-- .element: class="plain" -->
+
+---
+
+## Microservices - Lo malo
+
+En vez de 1, tenemos N:
+
+* procesos de despliegue
+* aplicaciones que monitorizar
+* base de datos independientes
+* y todos los [problemas](https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing) que vienen con los sistemas distribuidos
+
+---
+
+## Spring Cloud
+
+http://projects.spring.io/spring-cloud/
+* Spring Cloud Config
+* Spring Cloud Netflix (Eureka, Hystrix, Zull, Archaius...)
+* Spring Cloud Bus
+* Spring Cloud Cluster
+* Spring Cloud Consul
+* Spring Cloud Security
+* Spring Cloud Sleuth
+* ...
+
+---
+
+## Ejemplo: "El servicio"
+
+![Servicio](https://docs.google.com/drawings/d/1rBgbiyOZt-lcsKKFIdUYMNPXzMGfdD53K1LS6beMbTI/pub?w=512&amp;h=720) <!-- .element: class="plain" -->
+
+* https://github.com/jrpedrianes/techtalk-springcloud
+
+---
+
+## Ejemplo: "El servicio"
+
+* http://localhost:8000/reservations
+* http://localhost:8000/messages
+
+---
+
+## Ejemplo: "El servicio + Actuator"
+
+![Servicio](https://docs.google.com/drawings/d/1KqIH2aQ7-HwIOMG5V9--o6puyOSRSRxh7nCx0rwsd7U/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
+
+---
+
+## Ejemplo: "El servicio + Actuator"
+
+techtalk-springcloud-service.gradle
+
+```java
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+
+    compile "io.dropwizard.metrics:metrics-graphite"
+}
+```
+
+---
+
+## Ejemplo: "El servicio + Actuator"
+
+ApplicationConfiguration.java
+
+```java
+@ConditionalOnProperty(prefix = "tech-talk.graphite", name = "host", matchIfMissing = true)
+@Bean
+public GraphiteReporter graphiteReporter(MetricRegistry registry) {
+    Graphite graphite = new Graphite(applicationProperties.getGraphite().getHost(), applicationProperties.getGraphite().getPort());
+
+    GraphiteReporter reporter = GraphiteReporter.forRegistry(registry)
+        .prefixedWith("techtalks")
+        .build(graphite);
+    reporter.start(2, TimeUnit.SECONDS);
+    return reporter;
+}
+```
+
+---
+
+## Ejemplo: "El servicio + Actuator"
+
+ReservationService.java
+
+```java
+@Service
+public class ReservationService {
+
+    @Autowired
+    private CounterService counterService;
+
+    public Page<ReservationDomain> findAllReservations(Pageable pageable) {
+
+        counterService.increment("reservations.findAll");
+
+        return reservationRepository.findAll(pageable);
     }
 }
 ```
 
 ---
 
-## Slide 1.2
+## Ejemplo: "El servicio + Actuator"
+
+* http://localhost:8000/reservations
+* http://localhost:8000/messages
+* http://localhost:8000/manage
+* http://localhost
 
 ---
 
-## Slide 2
+## Ejemplo: "Service Discovery"
+
+
+![Eureka](https://docs.google.com/drawings/d/1BAsYpeTH49uQE6zdemC8e-PNjXd4cuKO274YZ244aXQ/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
 
 ---
 
-## Slide 2.1
+## Ejemplo: "Service Discovery"
 
+EurekaApplication.java
 
+```java
+@EnableDiscoveryClient
+@EnableEurekaServer
+@SpringBootApplication
+public class EurekaApplication {
 
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaApplication.class, args);
+    }
 
+}
+```
+
+---
+
+## Ejemplo: "Service Discovery"
+
+* http://localhost:8002
+
+---
+
+## Ejemplo: "Config"
+
+![Eureka](https://docs.google.com/drawings/d/1CUUby2FMDbS8lTJXB4bQz8AEOpF9V13AxrGB-_ocWFo/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
+
+---
+
+## Ejemplo: "Config"
+
+techtalk-springcloud-config.gradle
+
+```java
+description = "Spring Boot Cloud # Config"
+
+dependencies {
+    compile "org.springframework.cloud:spring-cloud-config-server"
+    compile "org.springframework.cloud:spring-cloud-config-monitor"
+    compile "org.springframework.cloud:spring-cloud-starter-bus-amqp"
+
+    compile "org.springframework.cloud:spring-cloud-starter-eureka"
+}
+```
+
+---
+
+## Ejemplo: "Config"
+
+ConfigApplication.groovy
+
+```java
+@EnableDiscoveryClient
+@EnableConfigServer
+@SpringBootApplication
+public class ConfigApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConfigApplication.class, args);
+    }
+
+}
+```
+
+---
+
+## Ejemplo: "Config"
+
+application.yml
+
+```
+spring:
+    application:
+        name: techtalk-springcloud-config
+    cloud:
+        config:
+            server:
+                git:
+                    uri: file:///.../techtalk-springcloud-config
+    eureka:
+        client:
+            healthcheck:
+                enabled: true
+            serviceUrl:
+                defaultZone: http://localhost:8002/eureka/
+```
+
+---
+
+## Ejemplo: "Config"
+
+* Config: http://localhost:8001/techtalk-springcloud-service/default.json
+* Eureka: http://localhost:8002
+
+---
+
+## Ejemplo: "Config"
+
+![Servicio+Config](https://docs.google.com/drawings/d/1DgIzljdAXS4XGQisxWYQj8OLFVFJ_NENwyd2X8vIQBw/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
+
+---
+
+## Ejemplo: "Servicio + Config"
+
+techtalk-springcloud-service.gradle
+
+```
+description = "Spring Boot Cloud # Service"
+
+dependencies {
+    compile "org.springframework.cloud:spring-cloud-starter-config"
+    compile "org.springframework.cloud:spring-cloud-starter-bus-amqp"
+
+    compile "org.springframework.cloud:spring-cloud-starter-eureka"
+}
+```
+
+---
+
+## Ejemplo: "Servicio + Config"
+
+bootstrap.yml (comentar conf en application.yml)
+
+```
+spring:
+  application:
+    name: techtalk-springcloud-service
+  cloud:
+    config:
+      discovery:
+        serviceId: techtalk-springcloud-config
+        enabled: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8002/eureka/
+```
+
+---
+
+## Ejemplo: "Servicio + Config"
+
+ServiceApplication.groovy
+
+```
+@EnableDiscoveryClient
+@SpringBootApplication
+public class ServiceApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(ServiceApplication.class, args);
+    }
+
+}
+```
+
+---
+
+## Ejemplo: "Servicio + Config"
+
+* Eureka: http://localhost:8002
+* Service:
+    * Actuator: http://localhost:8000/manage
+    * Reservas: http://localhost:8000/reservations
+    * Mensaje: http://localhost:8000/messages
+    * Graphite: http://localhost
+
+---
+
+## Ejemplo: "Cliente"
+
+![Cliente](https://docs.google.com/drawings/d/1tgHqYBrxSXKp42WYEqeqdlH0WvhkWHjvB-5ExgCrBcI/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
+
+---
+
+## Ejemplo: "Cliente"
+
+* Eureka: http://localhost:8002
+
+---
+
+## Ejemplo
+
+![Cliente](https://docs.google.com/drawings/d/1tgHqYBrxSXKp42WYEqeqdlH0WvhkWHjvB-5ExgCrBcI/pub?w=563&amp;h=304) <!-- .element: class="plain" -->
+
+---
+
+## Bola Extra
+
+techtalk-springcloud-discovery-eureka.gradle
+
+```
+description = "Spring Boot Cloud # Discovery Eureka"
+
+dependencies {
+    compile "de.codecentric:spring-boot-admin-server"
+    compile "de.codecentric:spring-boot-admin-server-ui"
+}
+```
+
+---
+
+## Bola Extra
+
+EurekaApplication.groovy
+
+```
+@EnableDiscoveryClient
+@EnableAdminServer
+@EnableEurekaServer
+@SpringBootApplication
+public class EurekaApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(EurekaApplication.class, args);
+    }
+
+}
+```
+
+---
+
+## Bola Extra
+
+* Eureka: http://localhost:8002
+* Eureka Admin: http://localhost:8002/boot-admin
+
+---
+
+## ¿ Preguntas ?
+
+![Preguntas](http://www.presentable.es/wp-content/uploads/2013/01/preguntas-y-respuestas.jpg) <!-- .element: class="plain" -->
+
+---
+
+![Thank you](http://autoguide.com.vsassets.com/blog/wp-content/uploads/2014/11/thany-you-sign.jpg) <!-- .element: class="plain" -->
+
+[@jrepdrianes](https://twitter.com/jrpedrianes)
 
                     </script>
                 </section>

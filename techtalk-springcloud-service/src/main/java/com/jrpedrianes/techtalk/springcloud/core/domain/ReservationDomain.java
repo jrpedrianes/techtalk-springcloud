@@ -30,11 +30,7 @@ public class ReservationDomain {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("ReservationDomain{");
-        sb.append("id=").append(id);
-        sb.append(", reservationName='").append(reservationName).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return String.format("ReservationDomain{ id=%s, reservationName='%s'}", id, reservationName);
     }
 
 }

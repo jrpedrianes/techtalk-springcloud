@@ -14,6 +14,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,4 +36,10 @@ public class ReservationController {
         return ok(result);
     }
 
+    @RequestMapping(method = GET, value = "{id}")
+    public HttpEntity<ReservationResource> loadReservation(@PathVariable Long id) {
+        ReservationDomain domain = reservationService.loadReservation(id);
+        ReservationResource resource = reservationAssembler.toResource(domain);
+        return ok(resource);
+    }
 }

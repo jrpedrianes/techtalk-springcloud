@@ -15,6 +15,10 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: postgres
 
 management:
   context-path: /manage
@@ -22,11 +26,6 @@ management:
 server:
   port: 8000
 
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: postgres
 #tech-talk:
 #  graphite:
 #    host: localhost

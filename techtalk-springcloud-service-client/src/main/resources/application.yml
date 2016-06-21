@@ -1,0 +1,10 @@
+info:
+  app.name: "${jar.baseName}"
+  app.description: "${description}"
+  app.version: "${version}"
+
+management:
+  context-path: /manage
+
+server:
+  port: 8004
