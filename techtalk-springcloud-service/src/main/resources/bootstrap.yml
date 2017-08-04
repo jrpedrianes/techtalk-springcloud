@@ -4,13 +4,11 @@ spring:
   cloud:
     config:
       discovery:
-        serviceId: techtalk-springcloud-config
         enabled: true
+        service-id: techtalk-springcloud-config
 
 eureka:
   client:
-    healthcheck:
-      enabled: true
     serviceUrl:
       defaultZone: http://localhost:8002/eureka/
   instance:

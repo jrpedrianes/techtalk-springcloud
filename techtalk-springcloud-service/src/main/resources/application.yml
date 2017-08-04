@@ -15,19 +15,16 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: false
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgres
-#    username: postgres
-#    password: postgres
+
+eureka:
+  client:
+    healthcheck:
+      enabled: true
 
 management:
   context-path: /manage
+  security:
+    enabled: false
 
 server:
   port: 8000
-
-#tech-talk:
-#  graphite:
-#    host: localhost
-#    port: 2003
-#  message: Hola

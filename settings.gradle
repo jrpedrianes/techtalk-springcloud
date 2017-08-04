@@ -1,7 +1,8 @@
-include "techtalk-springcloud-service",
-        "techtalk-springcloud-service-client",
+include "techtalk-springcloud-admin",
         "techtalk-springcloud-config",
-        "techtalk-springcloud-discovery-eureka"
+        "techtalk-springcloud-discovery-eureka",
+        "techtalk-springcloud-service",
+        "techtalk-springcloud-service-client"
 
 rootProject.name = "techtalk-springcloud"
 

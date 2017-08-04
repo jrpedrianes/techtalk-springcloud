@@ -10,13 +10,13 @@ spring:
     config:
       server:
         git:
-          uri: file:///srv/projects/JRPEDRIANES/2016-tech-talk/techtalk-springcloud-config
+          uri: file:///srv/System73/Projects/techtalk-springcloud-config
 
 eureka:
   client:
     healthcheck:
       enabled: true
-    serviceUrl:
+    service-url:
       defaultZone: http://localhost:8002/eureka/
   instance:
     status-page-url-path: /manage/info
@@ -26,6 +26,8 @@ eureka:
 
 management:
   context-path: /manage
+  security:
+    enabled: false
 
 server:
   port: 8001

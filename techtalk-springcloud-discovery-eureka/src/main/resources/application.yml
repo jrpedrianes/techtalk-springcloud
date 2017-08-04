@@ -11,16 +11,21 @@ spring:
       context-path: /boot-admin
 
 eureka:
+  server:
+    # no tendríamos que añadir esto pero en desa es necesario
+    enable-self-preservation: false
   instance:
     hostname: localhost
   client:
     register-with-eureka: false
-    fetch-registry: true
-    serviceUrl:
-      defaultZone: http://localhost:8002/eureka/
+    fetch-registry: false
+    service-url:
+      defaultZone: http://\${eureka.instance.hostname}:\${server.port}/eureka/
 
 management:
   context-path: /manage
+  security:
+    enabled: false
 
 server:
   port: 8002
